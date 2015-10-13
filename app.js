@@ -1,5 +1,6 @@
 /*globals window, console, jQuery, d3, XJSON*/
 var root,
+    svg = d3.select('svg'),
     MAX_DEPTH = 2,
     LAYOUTS = {
         'HORIZONTAL' : 0,
@@ -9,12 +10,16 @@ var root,
     };
 
 function redraw() {
-    root.postOrderDfs({
+    root.bfs({
         routes : ['children'],
         maxDepth : MAX_DEPTH
-    }, function (d) {
-        
+    }, function (node, depth) {
+        console.log(node, depth);
     });
+    return {
+        width : 100,
+        height : 100
+    };
 }
 
 function resize() {
@@ -25,7 +30,7 @@ function resize() {
         height : Math.max(window.innerHeight - 20, bounds.height)
     };
     
-    jQuery('svg').attr(bounds);
+    svg.attr(bounds);
 }
 
 window.onresize = resize;
@@ -35,8 +40,6 @@ window.onload = function () {
         url : 'test.xjson',
         success : function (data) {
             root = XJSON.parse(data);
-            console.log(root);
-            
             resize();
         }
     });
