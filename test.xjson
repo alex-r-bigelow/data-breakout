@@ -17,5 +17,13 @@
         "Utah State" : {},
         "Weber State" : {},
         "SUU" : {}
+    },
+    "XJSON_STYLE" : {
+        "@root['winners']" : {
+            "layout" : 0
+        },
+        "@root['winners']['Utah']" : {
+            "layout" : 1
+        }
     }
 }

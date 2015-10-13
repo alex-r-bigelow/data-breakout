@@ -25,25 +25,10 @@
     <script type="application/javascript" src="lib/xjson/Link.js"></script>
     <script type="application/javascript" src="lib/xjson/Formula.js"></script>
     <script type="application/javascript" src="lib/xjson/Table.js"></script>
-    <!--script type="application/javascript" src="thingVis.js"></script-->
-    <!--script type="application/javascript" src="app.js"></script-->
+    <script type="application/javascript" src="app.js"></script>
 </head>
 <body>
     <svg>
     </svg>
-    
-    <script>
-        var temp;
-        window.onload = function () {
-            jQuery.ajax({
-                url : 'test.xjson',
-                success : function (data) {
-                    data = XJSON.parse(data);
-                    console.log(data);
-                    temp = data.payload[0].payload[1].payload[0].payload[1].payload[0].payload[1];
-                }
-            });
-        };
-    </script>
 </body>
 </html>

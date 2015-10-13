@@ -12,6 +12,8 @@ var LAYOUT = {
     'RADIAL' : 4
 };
 
+// Monkey patching stuff on to Thing objects to attach rendering settings
+XJSON.Thing.prototype._postInit = XJSON.Thing.prototype.postInit;
 XJSON.Thing.prototype.postInit = function () {
     "use strict";
     var self = this;
