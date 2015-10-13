@@ -1,0 +1,21 @@
+{
+    "winners" : {
+        "Utah" : {
+            "Game1" : "@root['losers']['BYU']",
+            "Game2" : "@root['losers']['Utah State']"
+        },
+        "Utah State" : {
+            "Game3" : "@root['losers']['BYU']",
+            "Game4" : "@root['losers']['Weber State']"
+        },
+        "Weber State" : {
+            "Game5" : "@root['losers']['SUU']"
+        }
+    },
+    "losers" : {
+        "BYU" : {},
+        "Utah State" : {},
+        "Weber State" : {},
+        "SUU" : {}
+    }
+}

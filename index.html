@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>data-breakout</title>
+    <style>
+        body {
+            margin : 0px;
+        }
+    </style>
+
+    <script type="application/javascript" src="lib/jquery-1.11.3.min.js"></script>
+    <script type="application/javascript" src="lib/d3.min.js"></script>
+    <script type="application/javascript" src="lib/xjson.js"></script>
+    <script type="application/javascript" src="lib/xjson/Thing.js"></script>
+    <script type="application/javascript" src="lib/xjson/Value.js"></script>
+    <script type="application/javascript" src="lib/xjson/Null.js"></script>
+    <script type="application/javascript" src="lib/xjson/Boolean.js"></script>
+    <script type="application/javascript" src="lib/xjson/Int.js"></script>
+    <script type="application/javascript" src="lib/xjson/Float.js"></script>
+    <script type="application/javascript" src="lib/xjson/String.js"></script>
+    <script type="application/javascript" src="lib/xjson/List.js"></script>
+    <script type="application/javascript" src="lib/xjson/Tuple.js"></script>
+    <script type="application/javascript" src="lib/xjson/Dict.js"></script>
+    <script type="application/javascript" src="lib/xjson/Link.js"></script>
+    <script type="application/javascript" src="lib/xjson/Formula.js"></script>
+    <script type="application/javascript" src="lib/xjson/Table.js"></script>
+    <!--script type="application/javascript" src="thingVis.js"></script-->
+    <!--script type="application/javascript" src="app.js"></script-->
+</head>
+<body>
+    <svg>
+    </svg>
+    
+    <script>
+        var temp;
+        window.onload = function () {
+            jQuery.ajax({
+                url : 'test.xjson',
+                success : function (data) {
+                    data = XJSON.parse(data);
+                    console.log(data);
+                    temp = data.payload[0].payload[1].payload[0].payload[1].payload[0].payload[1];
+                }
+            });
+        };
+    </script>
+</body>
+</html>
