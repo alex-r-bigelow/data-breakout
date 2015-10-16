@@ -20,7 +20,7 @@
     },
     "XJSON_STYLE" : {
         "@root['winners']" : {
-            "layout" : 0
+            "layout" : 1
         },
         "@root['winners']['Utah']" : {
             "layout" : 1

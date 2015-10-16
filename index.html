@@ -6,6 +6,12 @@
     <style>
         body {
             margin : 0px;
+            overflow : scroll;
+        }
+        g.node > rect {
+            stroke-weight: 1px;
+            stroke: #dddddd;
+            fill: none;
         }
     </style>
 
@@ -29,6 +35,8 @@
 </head>
 <body>
     <svg>
+        <g id="nodes"></g>
+        <g id="links"></g>
     </svg>
 </body>
 </html>
