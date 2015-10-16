@@ -4,7 +4,7 @@ var root,
     svg,
     visibleNodes = [],
     visibleLookup = {},
-    MAX_DEPTH = 10;
+    MAX_DEPTH = 2;
 
 var DRAWING_DEFAULTS = {
     FIELD_WIDTH: 100,
@@ -113,7 +113,6 @@ var LAYOUT_FUNCTIONS = {
                 child,
                 xPosition = parent.bounds.x - parent.bounds.width / 2,
                 yPosition = parent.bounds.y - parent.bounds.height / 2;
-            
             childIds.forEach(function (cid) {
                 child = visibleNodes[visibleLookup[cid]];
                 child.bounds.x += xPosition;
@@ -147,6 +146,7 @@ function relayout() {
             maxDepth : MAX_DEPTH
         },
         visibleChildIds = [],
+        containerLeaves = {},
         style,
         layout,
         i, d,
@@ -178,6 +178,11 @@ function relayout() {
                 height : DRAWING_DEFAULTS.FIELD_HEIGHT
             };
         } else if (depth === MAX_DEPTH) {
+            containerLeaves[nodeWrapper.node.id] =
+                nodeWrapper.node instanceof XJSON.Tuple ? 'Tuple' :
+                    nodeWrapper.node instanceof XJSON.List ? 'List' :
+                        nodeWrapper.node instanceof XJSON.Dict ? 'Dict' :
+                            nodeWrapper.node instanceof XJSON.Table ? 'Table' : null;
             nodeWrapper.bounds = {
                 width : DRAWING_DEFAULTS.ICON_SIZE,
                 height : DRAWING_DEFAULTS.ICON_SIZE
@@ -191,7 +196,9 @@ function relayout() {
     // Next, we want to do the bottom-up layout
     // (calculate each node's local position and size)
     function collectChildren(c) {
-        visibleChildIds.push(c.id);
+        if (visibleLookup.hasOwnProperty(c.id)) {
+            visibleChildIds.push(c.id);
+        }
     }
     for (i = visibleNodes.length - 1; i >= 0; i -= 1) {
         // We want REVERSE bfs order - this way,
@@ -235,25 +242,50 @@ function relayout() {
     
     /**** Draw the frames ****/
     
+    var depthColorScale = d3.scale.linear()
+        .domain([0, MAX_DEPTH])
+        .range([d3.hsl(163,0.5,1.0),d3.hsl(163,0.5,0.75)]);
+    
     var nodeGroups = svg.select('#nodes').selectAll('g.node')
-        .data(visibleNodes);
+        .data(visibleNodes, function (d) { return d.node.id; });
     nodeGroups.enter().append('g')
         .attr('class','node')
-        .append('rect')
+            .append('rect')
             .attr('class', 'frame');
     nodeGroups.exit().remove();
     
     nodeGroups.attr('transform', function (d) {
         return 'translate(' + d.bounds.x + ',' + d.bounds.y + ')';
     });
-    nodeGroups.selectAll('rect').attr({
+    nodeGroups.selectAll('rect.frame').attr({
         x : function (d) { return -d.bounds.width / 2; },
         y : function (d) { return -d.bounds.height / 2; },
         width : function (d) { return d.bounds.width; },
-        height : function (d) { return d.bounds.height; }
+        height : function (d) { return d.bounds.height; },
+        fill : function (d) { return depthColorScale(d.depth); },
+        stroke : d3.hsl(163,0.5,0.25).toString()
     });
     
     /**** TODO: Draw the node contents ****/
+    var icons = nodeGroups.selectAll('image.icon').data(function (d) {
+        // return a "dataset" if this thing should be an icon
+        if (containerLeaves.hasOwnProperty(d.node.id)) {
+            return [containerLeaves[d.node.id]];
+        } else {
+            return [];
+        }
+    });
+    icons.enter().append('image').attr('class', 'icon');
+    icons.exit().remove();
+    icons.attr('xlink:href', function (d) {
+        return 'img/' + d + '.png';
+    });
+    icons.attr({
+        'width' : DRAWING_DEFAULTS.ICON_SIZE,
+        'height' : DRAWING_DEFAULTS.ICON_SIZE,
+        'x' : -DRAWING_DEFAULTS.ICON_SIZE / 2,
+        'y' : -DRAWING_DEFAULTS.ICON_SIZE / 2
+    });
     
     /**** TODO: Draw any visible links ****/
 }
