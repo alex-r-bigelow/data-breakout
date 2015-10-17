@@ -4,13 +4,13 @@ var root,
     svg,
     visibleNodes = [],
     visibleLookup = {},
-    MAX_DEPTH = 2;
+    MAX_DEPTH = 10;
 
 var DRAWING_DEFAULTS = {
     FIELD_WIDTH: 100,
-    FIELD_HEIGHT: 50,
+    FIELD_HEIGHT: 25,
     ICON_SIZE: 50,
-    PADDING: 5
+    PADDING: 10
 };
 
 var LAYOUTS = {
@@ -244,7 +244,7 @@ function relayout() {
     
     var depthColorScale = d3.scale.linear()
         .domain([0, MAX_DEPTH])
-        .range([d3.hsl(163,0.5,1.0),d3.hsl(163,0.5,0.75)]);
+        .range([d3.hsl(163,0.0,1.0),d3.hsl(163,1.0,0.85)]);
     
     var nodeGroups = svg.select('#nodes').selectAll('g.node')
         .data(visibleNodes, function (d) { return d.node.id; });
@@ -266,7 +266,9 @@ function relayout() {
         stroke : d3.hsl(163,0.5,0.25).toString()
     });
     
-    /**** TODO: Draw the node contents ****/
+    /**** Draw the node contents ****/
+    
+    // Draw any icons
     var icons = nodeGroups.selectAll('image.icon').data(function (d) {
         // return a "dataset" if this thing should be an icon
         if (containerLeaves.hasOwnProperty(d.node.id)) {
@@ -285,6 +287,34 @@ function relayout() {
         'height' : DRAWING_DEFAULTS.ICON_SIZE,
         'x' : -DRAWING_DEFAULTS.ICON_SIZE / 2,
         'y' : -DRAWING_DEFAULTS.ICON_SIZE / 2
+    });
+    
+    // Create any text fields
+    var valueFields = nodeGroups.selectAll('foreignobject.field').data(function (d) {
+        // return a "dataset" if this thing should be a field
+        if (d.node instanceof XJSON.Value) {
+            return [d.node.payload];
+        } else {
+            return [];
+        }
+    });
+    valueFields.enter()
+        .append('foreignObject')
+        .attr({
+            class : 'field',
+            width : DRAWING_DEFAULTS.FIELD_WIDTH,
+            height : DRAWING_DEFAULTS.FIELD_HEIGHT,
+            transform : 'translate(' + (-DRAWING_DEFAULTS.FIELD_WIDTH / 2) +
+                        ',' + (-DRAWING_DEFAULTS.FIELD_HEIGHT / 2) + ')'
+        
+        });
+    valueFields.exit().remove();
+    
+    valueFields.html(function (d) {
+        return '<input value="' + d + '" ' +
+                      'style="width:' + DRAWING_DEFAULTS.FIELD_WIDTH +
+                         'px;height:' + DRAWING_DEFAULTS.FIELD_HEIGHT +
+                         'px"/>';
     });
     
     /**** TODO: Draw any visible links ****/
