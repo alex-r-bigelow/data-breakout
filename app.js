@@ -4,7 +4,11 @@ var root,
     svg,
     visibleNodes = [],
     visibleLookup = {},
-    MAX_DEPTH = 10;
+    MAX_DEPTH = 10,
+    selection,
+    selectedGroup,
+    highlight,
+    highlightedGroup;
 
 var DRAWING_DEFAULTS = {
     FIELD_WIDTH: 100,
@@ -140,6 +144,41 @@ var LAYOUT_FUNCTIONS = {
     }
 };
 
+function changeSelection(newTarget) {
+    if (selection !== undefined) {
+        selectedGroup
+            .select('rect.frame')
+            .attr('stroke-width', null);
+    }
+    selection = newTarget;
+    if (selection !== undefined) {
+        selectedGroup = d3.select(this);
+        selectedGroup
+            .select('rect.frame')
+            .attr('stroke-width', 3);
+        console.log(selection.node.stringify());
+    } else {
+        d3.select('#mainInput').attr('value','');
+    }
+    d3.event.stopPropagation();
+}
+
+function changeHighlight(newTarget) {
+    if (highlight !== undefined) {
+        highlightedGroup
+            .select('rect.frame')
+            .style('fill', null);
+    }
+    highlight = newTarget;
+    if (highlight !== undefined) {
+        highlightedGroup = d3.select(this);
+        highlightedGroup
+            .select('rect.frame')
+            .style('fill', 'hsl(163, 100%, 50%)');
+    }
+    d3.event.stopPropagation();
+}
+
 function relayout() {
     var iterConfig = {
             routes : ['children'],
@@ -264,6 +303,12 @@ function relayout() {
         height : function (d) { return d.bounds.height; },
         fill : function (d) { return depthColorScale(d.depth); },
         stroke : d3.hsl(163,0.5,0.25).toString()
+    }).on('mouseover', function (d) {
+        changeHighlight.call(this.parentElement, d);
+    }).on('click', function (d) {
+        // The rect element captures the click... pass
+        // it up to the group
+        changeSelection.call(this.parentElement, d);
     });
     
     /**** Draw the node contents ****/
@@ -287,6 +332,14 @@ function relayout() {
         'height' : DRAWING_DEFAULTS.ICON_SIZE,
         'x' : -DRAWING_DEFAULTS.ICON_SIZE / 2,
         'y' : -DRAWING_DEFAULTS.ICON_SIZE / 2
+    }).on('mouseover', function () {
+        changeHighlight.call(this.parentElement,
+                             d3.select(this.parentElement).datum());
+    }).on('click', function () {
+        // The image captures the click... we need to
+        // pass the event up to the SVG group node
+        changeSelection.call(this.parentElement,
+                             d3.select(this.parentElement).datum());
     });
     
     // Create any text fields
@@ -302,6 +355,8 @@ function relayout() {
         .append('foreignObject')
         .attr({
             class : 'field',
+            x : 1,
+            y : 1,
             width : DRAWING_DEFAULTS.FIELD_WIDTH,
             height : DRAWING_DEFAULTS.FIELD_HEIGHT,
             transform : 'translate(' + (-DRAWING_DEFAULTS.FIELD_WIDTH / 2) +
@@ -312,12 +367,33 @@ function relayout() {
     
     valueFields.html(function (d) {
         return '<input value="' + d + '" ' +
-                      'style="width:' + DRAWING_DEFAULTS.FIELD_WIDTH +
-                         'px;height:' + DRAWING_DEFAULTS.FIELD_HEIGHT +
+                      'style="width:' + (DRAWING_DEFAULTS.FIELD_WIDTH-8) +
+                         'px;height:' + (DRAWING_DEFAULTS.FIELD_HEIGHT-2) +
                          'px"/>';
+    });
+    valueFields.select('input').on('mouseover', function (d) {
+        changeHighlight.call(this.parentElement.parentElement,
+                             d3.select(this.parentElement.parentElement)
+                                .datum());
+    }).on('click', function () {
+        // The input field captures the click... we need to
+        // pass the event up to the SVG group node
+        changeSelection.call(this.parentElement.parentElement,
+                             d3.select(this.parentElement.parentElement)
+                                .datum());
     });
     
     /**** TODO: Draw any visible links ****/
+}
+
+function init() {
+    d3.select('body')
+        .on('mouseover', function () {
+            changeHighlight.call(this, undefined);
+        })
+        .on('click', function () {
+            changeSelection.call(this, undefined);
+        });
 }
 
 window.onresize = relayout;
@@ -328,6 +404,7 @@ window.onload = function () {
         url: 'test.xjson',
         success: function (data) {
             visibleRoot = root = XJSON.parse(data);
+            init();
             relayout();
         }
     });

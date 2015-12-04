@@ -13,8 +13,41 @@
         }
         input {
             border: none;
-            padding: 0px;
+            padding-top: 0px;
+            padding-left: 3px;
+            padding-bottom: 0px;
+            padding-right: 3px;
             background-color: rgba(255,255,255,0.0);
+            outline: none;
+        }
+        #toolbar {
+            position: fixed;
+            left: 0px;
+            top: 0px;
+            right: 0px;
+            height: 30px;
+            background-color: hsla(163, 100%, 85%, 0.85);
+            border: 1px solid black;
+        }
+        span#buttonSpan {
+            position: absolute;
+            right: 5px;
+            top: 5px;
+        }
+        span#inputSpan {
+            position: absolute;
+            left: 5px;
+            top: 5px;
+            right: 300px;
+        }
+        input#mainField {
+            position: relative;
+            width: 100%;
+            font-family: "Consolas", monospace;
+        }
+        svg {
+            position: absolute;
+            top: 32px;
         }
     </style>
 
@@ -41,5 +74,13 @@
         <g id="nodes"></g>
         <g id="links"></g>
     </svg>
+    <div id="toolbar">
+        <span id="buttonSpan">
+            TODO: Some buttons...
+        </span>
+        <span id="inputSpan">
+            <input id="mainField" type="text"/>
+        </span>
+    </div>
 </body>
 </html>

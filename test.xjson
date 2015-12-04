@@ -9,7 +9,7 @@
             "Game4" : "@root['losers']['Weber State']"
         },
         "Weber State" : {
-            "Game5" : "@root['losers']['SUU']"
+            "Game5" : "@parent@parent@parent@parent"
         }
     },
     "losers" : {
@@ -19,6 +19,9 @@
         "SUU" : {}
     },
     "XJSON_STYLE" : {
+        "@root" : {
+            "layout" : 1
+        },
         "@root['winners']" : {
             "layout" : 1
         },
